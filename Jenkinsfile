@@ -1,29 +1,31 @@
 pipeline {
+
     agent any
     
+    environment {
+        DOCKER_IMAGE = "my-react-app"
+        DOCKER_TAG = "${env.BUILD_ID}"
+    }
+    
     stages {
-        stage('Example') {
+        stage('Checkout') {
             steps {
-                echo 'Hello World'
+                git branch: 'main', url: 'https://github.com/ваш-репозиторий.git'
             }
         }
         
-        stage('Checkout Git') {
-            steps {
-                git branch: 'main', 
-                url: 'https://github.com/spamurai1984/devopsTest.git',
-                credentialsId: '876c9019-4110-4da2-9245-5f34830c9105'
-            }
-        }
-        
-        stage('Build Docker Image') {
+        stage('Build and Deploy') {
             steps {
                 script {
-                    // Проверяем доступность Docker
-                    sh 'docker --version'
+                    // Собираем Docker-образ (включая сборку React через многостадийную сборку)
+                    docker.build("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}")
                     
-                    // Собираем образ
-                    docker.build("my-app:${env.BUILD_ID}")
+                    // Останавливаем старый контейнер
+                    sh 'docker stop react-container || true'
+                    sh 'docker rm react-container || true'
+                    
+                    // Запускаем новый контейнер
+                    sh "docker run -d -p 80:80 --name react-container ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
                 }
             }
         }
