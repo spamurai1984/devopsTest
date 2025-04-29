@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    // Добавляем настройки окружения для Docker
-    environment {
-        DOCKER_HUB = credentials('docker-hub-credentials') // Если нужен доступ к Docker Hub
-    }
-    
     stages {
         stage('Example') {
             steps {
@@ -17,31 +12,18 @@ pipeline {
             steps {
                 git branch: 'main', 
                 url: 'https://github.com/spamurai1984/devopsTest.git',
-                credentialsId: '876c9019-4110-4da2-9245-5f34830c9105' // Ваш credentialsId из лога
+                credentialsId: '876c9019-4110-4da2-9245-5f34830c9105'
             }
         }
         
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Проверяем, что Docker установлен и доступен
+                    // Проверяем доступность Docker
                     sh 'docker --version'
                     
-                    // Собираем образ (замените на ваш Dockerfile)
+                    // Собираем образ
                     docker.build("my-app:${env.BUILD_ID}")
-                }
-            }
-        }
-        
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Останавливаем и удаляем старый контейнер
-                    sh 'docker stop my-app-container || true'
-                    sh 'docker rm my-app-container || true'
-                    
-                    // Запускаем новый контейнер
-                    sh "docker run -d --name my-app-container my-app:${env.BUILD_ID}"
                 }
             }
         }
