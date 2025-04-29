@@ -10,8 +10,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ваш-репозиторий.git'
-            }
+                git branch: 'main', url: 'git@github.com:spamurai1984/devopsTest.git'
+           }
         }
         
         stage('Build and Deploy') {
