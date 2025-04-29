@@ -5,11 +5,11 @@ pipeline {
             steps {
                 echo 'Hello World'
             }
-	stage('Checkout Git') {
-		steps { 
-                    git branch: 'main', url: 'https://github.com/spamurai1984/devopsTest.git'
-	 }
-    }
+        }
+        stage('Checkout Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/spamurai1984/devopsTest.git'
+            }
         }
     }
 }
